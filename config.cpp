@@ -93,7 +93,7 @@ std::string Config::command() const
         cmd += " --project=" + m_projectFilePath.string() + " --file-filter=" + filter;
 
     } else {
-        cmd += " " + m_filename;
+        cmd += " " + m_filename.string();
     }
 
     cmd += " 2>&1";
@@ -113,14 +113,14 @@ std::string Config::parseArgs(int argc, char **argv)
 
     ++argv;
 
+    std::filesystem::path configPath = "";
+
     for (; *argv; ++argv) {
         const char *arg = *argv;
         const char *value;
 
         if ((value = startsWith(arg, "--config="))) {
-            std::string err = load(value);
-            if (!err.empty())
-                return "Failed to load config file '" + std::string(value) + "': " + err;
+            configPath = value;
             continue;
         }
 
@@ -135,6 +135,35 @@ std::string Config::parseArgs(int argc, char **argv)
 
     if (m_filename.empty())
         return "Missing filename";
+
+    if (configPath.empty())
+        configPath = findConfig(m_filename);
+
+    if (configPath.empty())
+        return "Failed to find config file";
+
+    std::string err = load(configPath);
+    if (err.empty())
+        return "";
+    return "Failed to load '" + configPath.string() + "': " + err;
+}
+
+// Find config file by recursively searching parent directories of input file
+std::filesystem::path Config::findConfig(const std::filesystem::path &input_path)
+{
+    auto path = input_path;
+
+    if (path.is_relative())
+        path = std::filesystem::current_path() / path;
+
+    do {
+        path = path.parent_path();
+        auto config_path = path / "run-cppcheck-config.json";
+
+        if (std::filesystem::exists(config_path))
+            return config_path;
+
+    } while (path != path.root_path());
 
     return "";
 }

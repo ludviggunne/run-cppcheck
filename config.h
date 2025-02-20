@@ -9,8 +9,8 @@ class Config {
 public:
     Config()
         : m_projectFilePath("")
-        , m_cppcheck("cppcheck")
         , m_filename("")
+        , m_cppcheck("cppcheck")
         , m_args({})
     {
     }
@@ -29,9 +29,12 @@ public:
     std::string parseArgs(int argc, char **argv);
 
 private:
+    static std::filesystem::path findConfig(const std::filesystem::path &input_path);
+
+private:
     std::filesystem::path m_projectFilePath = "";
+    std::filesystem::path m_filename;
     std::string m_cppcheck;
-    std::string m_filename;
     std::vector<std::string> m_args;
 };
 
