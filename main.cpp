@@ -59,8 +59,6 @@ static int executeCommand(const std::string& cmd, std::string &output)
 
 int main(int argc, char** argv) {
 
-    const std::string log_path = std::filesystem::current_path() / "log.txt";
-    logfile.open(log_path, std::ios_base::app);
 
     Config config;
 
@@ -70,9 +68,15 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    logfile.open(config.logFilePath(), std::ios_base::app);
+    if (logfile.bad()) {
+        std::cerr << "error: Failed to open logfile at '" << config.logFilePath().string() << "'" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     const std::string cmd = config.command();
 
-    logfile << "CMD:" << cmd << std::endl;
+    logfile << "CMD: " << cmd << std::endl;
 
     std::string output;
     int res = executeCommand(cmd, output);

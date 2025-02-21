@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -Wextra -Wpedantic
+CXXFLAGS=-Wall -Wextra -Wpedantic -std=c++17
 SRC=main.cpp\
     config.cpp
 OBJ=$(SRC:%.cpp=%.o)
