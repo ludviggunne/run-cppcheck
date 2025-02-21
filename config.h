@@ -31,7 +31,6 @@ public:
 private:
     static std::filesystem::path findConfig(const std::filesystem::path &input_path);
 
-private:
     std::filesystem::path m_projectFilePath = "";
     std::filesystem::path m_filename;
     std::string m_cppcheck;

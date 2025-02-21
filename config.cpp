@@ -24,11 +24,11 @@ std::string Config::load(const std::filesystem::path &path)
     if (ifs.fail())
         return std::strerror(errno);
 
-    std::string text = buffer.data();
+    const std::string text = buffer.data();
 
     // Parse JSON
     picojson::value data;
-    std::string err = picojson::parse(data, text);
+    const std::string err = picojson::parse(data, text);
     if (!err.empty()) {
         return err;
     }
@@ -39,7 +39,7 @@ std::string Config::load(const std::filesystem::path &path)
     const picojson::object &obj = data.get<picojson::object>();
 
     // Read settings
-    for (auto [key, value] : obj) {
+    for (const auto &[key, value] : obj) {
 
         if (key == "project_file") {
             if (!value.is<std::string>()) {
@@ -81,7 +81,7 @@ std::string Config::command() const
 
     cmd += m_cppcheck;
 
-    for (auto arg : m_args)
+    for (const auto &arg : m_args)
         cmd += " " + arg;
 
     if (!m_projectFilePath.empty()) {
@@ -142,7 +142,7 @@ std::string Config::parseArgs(int argc, char **argv)
     if (configPath.empty())
         return "Failed to find config file";
 
-    std::string err = load(configPath);
+    const std::string err = load(configPath);
     if (err.empty())
         return "";
     return "Failed to load '" + configPath.string() + "': " + err;
@@ -158,7 +158,7 @@ std::filesystem::path Config::findConfig(const std::filesystem::path &input_path
 
     do {
         path = path.parent_path();
-        auto config_path = path / "run-cppcheck-config.json";
+        const auto config_path = path / "run-cppcheck-config.json";
 
         if (std::filesystem::exists(config_path))
             return config_path;
