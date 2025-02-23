@@ -6,6 +6,15 @@
 #include <cstring>
 #include <cerrno>
 
+// mkdir and access
+#ifdef _WIN32
+#include <direct.h>
+#include <io.h>
+#else
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 std::string Config::load(const std::filesystem::path &path)
 {
     // Read config file
@@ -54,6 +63,22 @@ std::string Config::load(const std::filesystem::path &path)
                 return "Invalid value type for '" + key + "'";
             }
             m_cppcheck = value.get<std::string>();
+            continue;
+        }
+
+        if (key == "log_file") {
+            if (!value.is<std::string>()) {
+                return "Invalid value type for '" + key + "'";
+            }
+            m_logFilePath = value.get<std::string>();
+            continue;
+        }
+
+        if (key == "enable_logging") {
+            if (!value.is<bool>()) {
+                return "Invalid value type for '" + key + "'";
+            }
+            m_loggingEnabled = value.get<bool>();
             continue;
         }
 
@@ -136,6 +161,11 @@ std::string Config::parseArgs(int argc, char **argv)
     if (m_filename.empty())
         return "Missing filename";
 
+    if (m_logFilePath.empty()) {
+        const std::string error = getDefaultLogFilePath(m_logFilePath);
+        if (!error.empty())
+            return error;
+    }
     if (configPath.empty())
         configPath = findConfig(m_filename);
 
@@ -164,6 +194,56 @@ std::filesystem::path Config::findConfig(const std::filesystem::path &input_path
             return config_path;
 
     } while (path != path.root_path());
+
+    return "";
+}
+
+static std::string mkdirRecursive(const std::filesystem::path &path)
+{
+    int res;
+    std::filesystem::path subpath = "";
+    for (auto dir : path) {
+        subpath = subpath / dir;
+#ifdef _WIN32
+        res = _access(subpath.string().c_str(), 0) && _mkdir(subpath.string().c_str());
+#else
+        res = access(subpath.string().c_str(), F_OK) && mkdir(subpath.string().c_str(), 0777);
+#endif
+        if (res)
+            return "Failed to create '" + subpath.string() + "': " + std::strerror(errno);
+    }
+    return "";
+}
+
+std::string Config::getDefaultLogFilePath(std::filesystem::path &path)
+{
+    path = "";
+
+#ifdef _WIN32
+    const char *localappdata = std::getenv("LOCALAPPDATA");
+
+    if (localappdata) {
+        path = localappdata;
+    } else {
+        return "%LOCALAPPDATA% not set";
+    }
+#else
+    const char *xdg_state_home = std::getenv("XDG_STATE_HOME");
+
+    if (xdg_state_home) {
+        path = xdg_state_home;
+    } else {
+        path = std::string(std::getenv("HOME")) + "/.local/state";
+    }
+#endif
+
+    path = path / "run-cppcheck";
+
+    const std::string error = mkdirRecursive(path);
+    if (!error.empty())
+        return error;
+
+    path = path / "log.txt";
 
     return "";
 }

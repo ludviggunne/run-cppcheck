@@ -9,8 +9,10 @@ class Config {
 public:
     Config()
         : m_projectFilePath("")
-        , m_filename("")
+        , m_logFilePath("")
+        , m_loggingEnabled(true)
         , m_cppcheck("cppcheck")
+        , m_filename("")
         , m_args({})
     {
     }
@@ -28,12 +30,20 @@ public:
      * on failure. */
     std::string parseArgs(int argc, char **argv);
 
+    const std::filesystem::path logFilePath() const
+    {
+        return m_logFilePath;
+    }
+
 private:
     static std::filesystem::path findConfig(const std::filesystem::path &input_path);
+    static std::string getDefaultLogFilePath(std::filesystem::path &path);
 
-    std::filesystem::path m_projectFilePath = "";
-    std::filesystem::path m_filename;
+    std::filesystem::path m_projectFilePath;
+    std::filesystem::path m_logFilePath;
+    bool m_loggingEnabled;
     std::string m_cppcheck;
+    std::filesystem::path m_filename;
     std::vector<std::string> m_args;
 };
 
