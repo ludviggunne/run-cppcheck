@@ -10,6 +10,7 @@ public:
     Config()
         : m_projectFilePath("")
         , m_logFilePath("")
+        , m_configPath("")
         , m_loggingEnabled(true)
         , m_cppcheck("cppcheck")
         , m_filename("")
@@ -35,12 +36,18 @@ public:
         return m_logFilePath;
     }
 
+    const std::filesystem::path configPath() const
+    {
+        return m_configPath;
+    }
+
 private:
     static std::filesystem::path findConfig(const std::filesystem::path &input_path);
     static std::string getDefaultLogFilePath(std::filesystem::path &path);
 
     std::filesystem::path m_projectFilePath;
     std::filesystem::path m_logFilePath;
+    std::filesystem::path m_configPath;
     bool m_loggingEnabled;
     std::string m_cppcheck;
     std::filesystem::path m_filename;
