@@ -138,14 +138,12 @@ std::string Config::parseArgs(int argc, char **argv)
 
     ++argv;
 
-    std::filesystem::path configPath = "";
-
     for (; *argv; ++argv) {
         const char *arg = *argv;
         const char *value;
 
         if ((value = startsWith(arg, "--config="))) {
-            configPath = value;
+            m_configPath = value;
             continue;
         }
 
@@ -166,16 +164,20 @@ std::string Config::parseArgs(int argc, char **argv)
         if (!error.empty())
             return error;
     }
-    if (configPath.empty())
-        configPath = findConfig(m_filename);
+    if (m_configPath.empty())
+        m_configPath = findConfig(m_filename);
 
-    if (configPath.empty())
+    if (m_configPath.empty())
         return "Failed to find config file";
 
-    const std::string err = load(configPath);
-    if (err.empty())
-        return "";
-    return "Failed to load '" + configPath.string() + "': " + err;
+    const std::string err = load(m_configPath);
+    if (!err.empty())
+        return "Failed to load '" + m_configPath.string() + "': " + err;
+
+    if (!m_projectFilePath.empty() && m_projectFilePath.is_relative())
+        m_projectFilePath = m_configPath.parent_path() / m_projectFilePath;
+
+    return "";
 }
 
 // Find config file by recursively searching parent directories of input file

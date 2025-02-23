@@ -76,7 +76,8 @@ int main(int argc, char** argv) {
 
     const std::string cmd = config.command();
 
-    logfile << "CMD: " << cmd << std::endl;
+    logfile << "config path: " << config.configPath() << std::endl;
+    logfile << "command: " << cmd << std::endl;
 
     std::string output;
     int res = executeCommand(cmd, output);
