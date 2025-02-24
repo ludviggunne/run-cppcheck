@@ -1,0 +1,13 @@
+name: Build (Windows)
+on:
+  push:
+jobs:
+  build-project:
+    name: Build Project
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
