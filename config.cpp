@@ -126,10 +126,26 @@ std::string Config::command() const
     return cmd;
 }
 
-static const char *startsWith(const char *arg, const char *start) {
+static const char *startsWith(const char *arg, const char *start)
+{
     if (std::strncmp(arg, start, std::strlen(start)) != 0)
         return NULL;
     return arg + std::strlen(start);
+}
+
+static std::filesystem::path normalizePath(const std::filesystem::path path)
+{
+    std::filesystem::path result;
+    for (auto component : path) {
+        if (component.string() == ".")
+            continue;
+        if (component.string() == "..") {
+            result = result.parent_path();
+            continue;
+        }
+        result /= component;
+    }
+    return result;
 }
 
 std::string Config::parseArgs(int argc, char **argv)
@@ -176,6 +192,9 @@ std::string Config::parseArgs(int argc, char **argv)
 
     if (!m_projectFilePath.empty() && m_projectFilePath.is_relative())
         m_projectFilePath = m_configPath.parent_path() / m_projectFilePath;
+
+    if (m_filename.is_relative())
+        m_filename = normalizePath(std::filesystem::current_path() / m_filename);
 
     return "";
 }
