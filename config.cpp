@@ -111,7 +111,7 @@ std::string Config::command() const
 
     if (!m_projectFilePath.empty()) {
 
-        std::string filter = m_filename;
+        std::string filter = m_filename.string();
         if (std::strchr(filter.c_str(), ' '))
             filter = "\"" + filter + "\"";
 
