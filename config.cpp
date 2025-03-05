@@ -22,18 +22,7 @@ std::string Config::load(const std::filesystem::path &path)
     if (ifs.fail())
         return std::strerror(errno);
 
-    std::streampos length;
-    ifs.seekg(0, std::ios::end);
-    length = ifs.tellg();
-    ifs.seekg(0, std::ios::beg);
-
-    std::vector<char> buffer(length);
-    ifs.read(&buffer[0], length);
-
-    if (ifs.fail())
-        return std::strerror(errno);
-
-    const std::string text = buffer.data();
+    const std::string text(std::istreambuf_iterator<char>(ifs), {});
 
     // Parse JSON
     picojson::value data;
@@ -104,24 +93,22 @@ std::string Config::command() const
 {
     std::string cmd;
 
-    cmd += m_cppcheck;
+    cmd += "\"" + m_cppcheck + "\"";
 
     for (const auto &arg : m_args)
-        cmd += " " + arg;
+        cmd += " \"" + arg + "\"";
 
     if (!m_projectFilePath.empty()) {
-
-        std::string filter = m_filename.string();
-        if (std::strchr(filter.c_str(), ' '))
-            filter = "\"" + filter + "\"";
-
-        cmd += " --project=" + m_projectFilePath.string() + " --file-filter=" + filter;
-
+        cmd += " \"--project=" + m_projectFilePath.string() + "\" \"--file-filter=" + m_filename.string() + "\"";
     } else {
-        cmd += " " + m_filename.string();
+        cmd += " \"" + m_filename.string() + "\"";
     }
 
     cmd += " 2>&1";
+
+#ifdef _WIN32
+    cmd = "\"" + cmd + "\"";
+#endif
 
     return cmd;
 }
@@ -184,7 +171,7 @@ std::string Config::parseArgs(int argc, char **argv)
         m_configPath = findConfig(m_filename);
 
     if (m_configPath.empty())
-        return "Failed to find config file";
+        return "Failed to find 'run-cppcheck-config.json' in any parent directory of analyzed file";
 
     const std::string err = load(m_configPath);
     if (!err.empty())
