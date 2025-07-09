@@ -7,6 +7,8 @@
 #include <filesystem>
 
 #include <sys/stat.h>  // stat
+#include <stdio.h>
+#include <io.h>
 
 #include "config.h"
 
@@ -72,6 +74,11 @@ int main(int argc, char** argv) {
     if (logfile.bad()) {
         std::cerr << "error: Failed to open logfile at '" << config.logFilePath().string() << "'" << std::endl;
         return EXIT_FAILURE;
+    }
+
+    if (_isatty(_fileno(stdout))) {
+        std::cerr << "log file path is: " << config.logFilePath() << std::endl;
+        std::cerr << "cppcheck executable is: " << config.m_cppcheck << std::endl;
     }
 
     const std::string cmd = config.command();

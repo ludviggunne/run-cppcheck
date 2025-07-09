@@ -47,7 +47,7 @@ public:
         return m_printVersion;
     }
 
-private:
+// private:
     static std::filesystem::path findFile(const std::filesystem::path &input_path, const std::string &filename);
     static std::string getDefaultLogFilePath(std::filesystem::path &path);
     std::string matchFilenameFromCompileCommand();
