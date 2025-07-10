@@ -326,6 +326,8 @@ std::string Config::getDefaultLogFilePath(std::filesystem::path &path)
 #ifdef _WIN32
     const char *localappdata = std::getenv("LOCALAPPDATA");
 
+    std::cerr << "Compiled on windows" << std::endl;
+
     if (localappdata && !std::strlen(localappdata) == 0) {
         path = localappdata;
     } else {
@@ -333,6 +335,8 @@ std::string Config::getDefaultLogFilePath(std::filesystem::path &path)
     }
 #else
     const char *xdg_state_home = std::getenv("XDG_STATE_HOME");
+
+    std::cerr << "Compiled on ubuntu" << std::endl;
 
     if (xdg_state_home) {
         path = xdg_state_home;
