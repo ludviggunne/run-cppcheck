@@ -326,10 +326,10 @@ std::string Config::getDefaultLogFilePath(std::filesystem::path &path)
 #ifdef _WIN32
     const char *localappdata = std::getenv("LOCALAPPDATA");
 
-    if (localappdata) {
+    if (localappdata && !std::strlen(localappdata) == 0) {
         path = localappdata;
     } else {
-        return "%LOCALAPPDATA% not set";
+        return "%LOCALAPPDATA% not set or empty";
     }
 #else
     const char *xdg_state_home = std::getenv("XDG_STATE_HOME");
