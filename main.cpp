@@ -70,6 +70,8 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    std::cerr << "working directory is " << std::filesystem::current_path() << std::endl;
+
     logfile.open(config.logFilePath(), std::ios_base::app);
     if (logfile.bad()) {
         std::cerr << "error: Failed to open logfile at '" << config.logFilePath().string() << "'" << std::endl;
