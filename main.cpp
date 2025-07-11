@@ -82,10 +82,13 @@ int main(int argc, char** argv) {
     std::string output;
     int res = executeCommand(cmd, output);
 
-    if (config.printVersion())
+    if (config.printVersion()) {
         std::cout << output;
-    else
+    } else {
+        std::cerr << "log file path: " << config.logFilePath() << std::endl;
+        std::cerr << "cppcheck executable path: " << config.m_cppcheck << std::endl;
         std::cerr << output;
+    }
     logfile << output;
 
     return res;

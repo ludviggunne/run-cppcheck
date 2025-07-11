@@ -47,6 +47,8 @@ public:
         return m_printVersion;
     }
 
+    std::string m_cppcheck;
+
 private:
     static std::filesystem::path findFile(const std::filesystem::path &input_path, const std::string &filename);
     static std::string getDefaultLogFilePath(std::filesystem::path &path);
@@ -56,7 +58,6 @@ private:
     std::filesystem::path m_logFilePath;
     std::filesystem::path m_configPath;
     bool m_loggingEnabled;
-    std::string m_cppcheck;
     std::filesystem::path m_filename;
     std::vector<std::string> m_args;
     bool m_printVersion;
