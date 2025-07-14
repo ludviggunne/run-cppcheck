@@ -256,19 +256,6 @@ std::string Config::parseArgs(int argc, char **argv)
         // Only warn if compile_commands.json is corrupted
         if (!err.empty())
             return "Failed to process compile_commands.json: " + err;
-    } else {
-
-        // If --version is used there is no input file, so check for config
-        // in current working directory
-        if (m_configPath.empty())
-            m_configPath = std::filesystem::current_path() / "run-cppcheck-config.json";
-
-        if (!fileExists(m_configPath))
-            return "";
-
-        std::string err = load(m_configPath);
-        if (!err.empty())
-            return "Failed to load '" + m_configPath.string() + "': " + err;
     }
 
     return "";
