@@ -47,14 +47,6 @@ std::string Config::load(const std::filesystem::path &path)
             continue;
         }
 
-        if (key == "cppcheck") {
-            if (!value.is<std::string>()) {
-                return "Invalid value type for '" + key + "'";
-            }
-            m_cppcheck = value.get<std::string>();
-            continue;
-        }
-
         if (key == "log_file") {
             if (!value.is<std::string>()) {
                 return "Invalid value type for '" + key + "'";
@@ -93,7 +85,7 @@ std::string Config::command() const
 {
     std::string cmd;
 
-    cmd += "\"" + m_cppcheck + "\"";
+    cmd += "\"cppcheck\"";
 
     if (m_printVersion) {
         cmd += " \"--version\"";

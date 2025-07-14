@@ -12,7 +12,6 @@ public:
         , m_logFilePath("")
         , m_configPath("")
         , m_loggingEnabled(true)
-        , m_cppcheck("cppcheck")
         , m_filename("")
         , m_args({})
         , m_printVersion(false)
@@ -56,7 +55,6 @@ private:
     std::filesystem::path m_logFilePath;
     std::filesystem::path m_configPath;
     bool m_loggingEnabled;
-    std::string m_cppcheck;
     std::filesystem::path m_filename;
     std::vector<std::string> m_args;
     bool m_printVersion;
